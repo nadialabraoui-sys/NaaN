@@ -1,0 +1,158 @@
+<app-header [mostrarHamburguesa]="true" (hamburguesa)="navbarRef.toggle()"></app-header>
+<app-navbar #navbarRef></app-navbar>
+
+@if (enviado()) {
+  <div class="min-h-[calc(100vh-72px)] flex flex-col items-center justify-center gap-6 bg-white" role="status" aria-live="polite">
+    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="#AE0000" stroke-width="1.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <p class="text-[18px] font-semibold text-gray-900 text-center m-0">Diseño recibido, nos pondremos en contacto contigo pronto.</p>
+    <button
+      type="button"
+      (click)="nuevo()"
+      class="bg-naan-red text-white border-none px-7 py-3 rounded-lg text-[14px] font-bold cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000]"
+    >Crear otro diseño</button>
+  </div>
+} @else {
+  <div class="flex h-[calc(100vh-52px)] overflow-hidden max-md:flex-col max-md:h-auto max-md:overflow-visible">
+
+    <!-- formulario de diseno -->
+    <div class="flex-1 overflow-y-auto flex flex-col justify-center pl-16 pr-10 py-10 bg-white max-md:pl-6 max-md:pr-6 max-md:py-8 max-md:overflow-visible" aria-label="Formulario de diseño">
+
+      <h1 class="text-[22px] font-bold text-naan-red m-0 mb-8 tracking-[0.06em] skew-x-[-12deg]">CREA TU DISEÑO</h1>
+
+      @if (error()) {
+        <div
+          class="bg-red-50 text-naan-red px-[14px] py-[10px] rounded-md text-[13px] mb-5"
+          role="alert"
+          aria-live="assertive"
+        >{{ error() }}</div>
+      }
+
+      <form (ngSubmit)="enviar()" class="flex flex-col gap-5 max-w-sm max-md:max-w-full" novalidate aria-label="Formulario de diseño personalizado">
+
+        <p class="text-right text-xs text-gray-500 m-0">* Campos obligatorios</p>
+
+        <div class="flex flex-col gap-[6px]">
+          <label for="dis-talla" class="text-xs font-bold text-gray-600 uppercase tracking-[0.08em]">Talla *</label>
+          <select
+            id="dis-talla"
+            [(ngModel)]="talla"
+            name="talla"
+            required
+            class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none bg-white transition-[border-color] duration-200 focus:border-naan-red font-[inherit] cursor-pointer"
+          >
+            <option value="" disabled>Selecciona una talla</option>
+            @for (t of tallas; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-[6px]">
+          <label for="dis-tejido" class="text-xs font-bold text-gray-600 uppercase tracking-[0.08em]">Tejido *</label>
+          <select
+            id="dis-tejido"
+            [(ngModel)]="tejido"
+            name="tejido"
+            required
+            class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none bg-white transition-[border-color] duration-200 focus:border-naan-red font-[inherit] cursor-pointer"
+          >
+            <option value="" disabled>Selecciona un tejido</option>
+            @for (t of tejidos; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-[6px]">
+          <label for="dis-color" class="text-xs font-bold text-gray-600 uppercase tracking-[0.08em]">Color</label>
+          <div class="flex items-center gap-3">
+            <input
+              id="dis-color"
+              type="color"
+              [(ngModel)]="color"
+              name="color"
+              class="w-12 h-10 border-[1.5px] border-gray-300 rounded-lg cursor-pointer p-[2px] outline-none transition-[border-color] duration-200 focus:border-naan-red"
+              aria-label="Seleccionar color"
+            />
+            <span class="text-sm text-gray-500 font-mono uppercase">{{ color }}</span>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-2 bg-naan-red text-white border-none px-7 py-3 rounded-lg text-[15px] font-bold cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] self-start"
+        >Enviar diseño</button>
+
+      </form>
+    </div>
+
+    <!-- canvas -->
+<div class="flex-none w-[60vw] h-[62vh] my-auto mr-8 flex flex-col border border-gray-200 rounded-xl bg-white overflow-hidden max-md:w-auto max-md:mx-4 max-md:mb-6 max-md:h-[70vw] max-md:my-0 max-md:mr-0 max-md:rounded-xl">
+      <div class="flex items-center justify-between px-4 py-2 border-b border-gray-100 shrink-0">
+        <p class="text-xs font-bold text-gray-600 uppercase tracking-[0.08em] m-0">Editor de diseño</p>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-400">{{ imagenesCount() }}/{{ MAX_IMAGENES }} imágenes</span>
+          <button
+            type="button"
+            (click)="abrirSelectorImagen('frente')"
+            [disabled]="imagenesCount() >= MAX_IMAGENES"
+            class="text-[12px] font-bold px-3 py-[5px] border border-naan-red text-naan-red rounded-lg cursor-pointer bg-white hover:bg-naan-red hover:text-white transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Añadir imagen al frente"
+          >+ Frente</button>
+          <button
+            type="button"
+            (click)="abrirSelectorImagen('espalda')"
+            [disabled]="imagenesCount() >= MAX_IMAGENES"
+            class="text-[12px] font-bold px-3 py-[5px] border border-naan-red text-naan-red rounded-lg cursor-pointer bg-white hover:bg-naan-red hover:text-white transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Añadir imagen a la espalda"
+          >+ Espalda</button>
+        </div>
+      </div>
+
+      <!-- elegir prenda -->
+      <div class="flex shrink-0 px-3 pt-1 gap-1 border-b border-gray-100">
+        <button
+          type="button"
+          (click)="cambiarPrenda('camiseta')"
+          class="px-4 py-[5px] text-[11px] font-bold uppercase tracking-[0.1em] border-b-2 -mb-px bg-transparent cursor-pointer transition-colors duration-150"
+          [ngClass]="prendaActiva() === 'camiseta' ? 'text-naan-red border-naan-red' : 'text-gray-400 border-transparent'"
+        >Camiseta</button>
+        <button
+          type="button"
+          (click)="cambiarPrenda('pantalon')"
+          class="px-4 py-[5px] text-[11px] font-bold uppercase tracking-[0.1em] border-b-2 -mb-px bg-transparent cursor-pointer transition-colors duration-150"
+          [ngClass]="prendaActiva() === 'pantalon' ? 'text-naan-red border-naan-red' : 'text-gray-400 border-transparent'"
+        >Pantalón</button>
+      </div>
+
+      <div class="flex-1 overflow-hidden flex flex-row items-stretch">
+
+        <!-- frente -->
+        <div class="flex-1 flex flex-col items-center min-w-0 border-r border-gray-100">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] pt-2 pb-0 m-0">Frente</p>
+          <div #canvasContainerFrente class="flex-1 overflow-hidden flex items-center justify-center p-4 w-full">
+            <canvas #fabricCanvasFrente></canvas>
+          </div>
+        </div>
+
+        <!-- espalda -->
+        <div class="flex-1 flex flex-col items-center min-w-0">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] pt-2 pb-0 m-0">Espalda</p>
+          <div #canvasContainerEspalda class="flex-1 overflow-hidden flex items-center justify-center p-4 w-full">
+            <canvas #fabricCanvasEspalda></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="text-[11px] text-gray-400 px-4 py-1 shrink-0 m-0">
+        Selecciona una imagen y pulsa <kbd class="bg-gray-100 px-1 rounded text-[10px]">Supr</kbd> para eliminarla
+      </p>
+
+      <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" aria-hidden="true" />
+    </div>
+
+  </div>
+}

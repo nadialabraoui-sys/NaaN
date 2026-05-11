@@ -1,0 +1,34 @@
+<a [routerLink]="['/producto', producto().id_producto]"
+  class="no-underline flex flex-col overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
+  [class.opacity-40]="eliminado()"
+  [attr.aria-label]="producto().nombre + ' — ' + producto().precio + ' €'"
+>
+  <div class="w-full aspect-square bg-naan-grey overflow-hidden rounded-md shadow-md/30">
+    @if (producto().imagen) {
+      <img [src]="'assets/' + producto().imagen" [alt]="producto().nombre" loading="lazy"
+        class="w-full h-full object-cover block"/>
+    } @else {
+      <div class="w-full h-full flex items-center justify-center text-gray-300" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+        </svg>
+      </div>
+    }
+  </div>
+
+  <div class="flex items-center gap-2 pt-3">
+    @if (mostrarFavorito()) {
+      <button
+        app-boton-favorito
+        class="bg-transparent border-none p-0 ml-2 flex items-center justify-center cursor-pointer shrink-0"
+        [activo]="activo()"
+        [idProducto]="producto().id_producto"
+        (changed)="changed.emit($event)"
+      ></button>
+    }
+    <div class="flex flex-col items-end flex-1 min-w-0 gap-[3px]">
+      <span class="text-[20px] text-black truncate w-full text-right skew-x-[-12deg] drop-shadow-md/20" [title]="producto().nombre">{{ producto().nombre }}</span>
+      <span class="text-[17px] text-black text-right mt-5 drop-shadow-md/30">{{ producto().precio}} €</span>
+    </div>
+  </div>
+</a>

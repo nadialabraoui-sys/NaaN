@@ -1,0 +1,132 @@
+﻿<div class="flex flex-col gap-5">
+
+  <h2 class="text-[22px] font-bold text-gray-900 m-0 mb-1">Mis pedidos</h2>
+
+  @if (vm$ | async; as vm) {
+
+  @if (vm.cargando) {
+    <div class="flex flex-col items-center gap-3 py-15 text-gray-400 text-sm" aria-live="polite" aria-busy="true">
+      <div class="spinner" role="status"><span class="sr-only">Cargando pedidos...</span></div>
+      <p>Cargando pedidos...</p>
+    </div>
+  } @else if (vm.error) {
+    <div class="flex flex-col items-center gap-3 py-15 text-gray-400 text-sm" role="alert">
+      <p>{{ vm.error }}</p>
+    </div>
+  } @else {
+
+    <div class="flex gap-2 flex-wrap" role="group" aria-label="Filtrar pedidos por estado">
+      @for (f of filtros; track f.valor) {
+        <button
+          class="flex items-center gap-[6px] px-[14px] py-[7px] border-[1.5px] border-gray-200 rounded-[20px] text-[13px] text-gray-500 cursor-pointer hover:border-naan-red hover:text-naan-red"
+          [class.bg-naan-red]="filtroEstado() === f.valor"
+          [class.border-naan-red]="filtroEstado() === f.valor"
+          [class.text-white]="filtroEstado() === f.valor"
+          [class.font-semibold]="filtroEstado() === f.valor"
+          (click)="filtroEstado.set(f.valor)"
+          [attr.aria-pressed]="filtroEstado() === f.valor"
+        >
+          {{ f.label }}
+          @if (contarPorEstado(vm.pedidos, f.valor) > 0) {
+            <span
+              class="bg-black/[0.12] rounded-[10px] px-[6px] py-[1px] text-[11px]"
+              [class.bg-white/25]="filtroEstado() === f.valor"
+              aria-hidden="true"
+            >{{ contarPorEstado(vm.pedidos, f.valor) }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (pedidosFiltrados(vm.pedidos).length === 0) {
+      <div class="flex flex-col items-center gap-3 py-15 text-gray-400 text-sm" aria-live="polite">
+        @if (filtroEstado() === '') {
+          <p>Aún no tienes ningún pedido.</p>
+        } @else {
+          <p>No tienes pedidos con estado "{{ filtroEstado() }}".</p>
+        }
+      </div>
+    }
+
+  @for (pedido of pedidosFiltrados(vm.pedidos); track pedido.numero) {
+    <article
+      class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] overflow-hidden transition-[box-shadow] duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]"
+      [attr.aria-label]="'Pedido número ' + pedido.numero"
+    >
+
+      <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 bg-gray-50">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[15px] font-bold text-gray-900">Pedido #{{ pedido.numero }}</span>
+          <span class="text-xs text-gray-500 bg-gray-100 px-2 py-[2px] rounded-[10px]">
+            {{ pedido.items.length }} {{ pedido.items.length === 1 ? 'artículo' : 'artículos' }}
+          </span>
+          @if (pedido.fecha_pedido) {
+            <span class="text-xs text-gray-400">{{ formatearFecha(pedido.fecha_pedido) }}</span>
+          }
+        </div>
+        <span
+          class="px-3 py-1 rounded-[20px] text-xs font-semibold whitespace-nowrap"
+          [ngClass]="badgeClasses(pedido.estado)"
+          [attr.aria-label]="'Estado: ' + pedido.estado"
+        >{{ pedido.estado | titlecase }}</span>
+      </div>
+
+      @if (pedido.codigo_seguimiento) {
+        <div class="flex items-center gap-2 px-5 py-[10px] bg-amber-50 border-b border-amber-200 text-[13px]">
+          <span class="text-gray-500 font-semibold">Seguimiento:</span>
+          <span class="font-mono text-gray-600 flex-1">{{ pedido.codigo_seguimiento }}</span>
+        </div>
+      }
+
+      <div class="flex flex-col" role="list" aria-label="Productos del pedido">
+        @for (item of pedido.items; track item.id_producto) {
+          <div
+            class="flex items-center gap-[14px] px-5 py-[14px] border-b border-gray-100 last:border-b-0"
+            role="listitem"
+          >
+            <div class="w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden bg-gray-100">
+              @if (item.producto?.imagen) {
+                <img [src]="'assets/' + item.producto.imagen" [alt]="item.producto?.nombre" class="w-full h-full object-cover"/>
+              } @else {
+                <div class="w-full h-full flex items-center justify-center" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                </div>
+              }
+            </div>
+            <div class="flex-1 flex flex-col gap-[3px]">
+              <span class="text-sm font-semibold text-gray-900">{{ item.producto?.nombre || 'Producto #' + item.id_producto }}</span>
+              @if (item.producto?.talla) {
+                <span class="text-xs text-gray-500">Talla {{ item.producto.talla }}</span>
+              }
+              <span class="text-xs text-gray-500">{{ item.precio_en_el_momento }} € / ud.</span>
+            </div>
+            <div class="flex flex-col items-end gap-[3px]">
+              <span class="text-xs text-gray-500">x{{ item.cantidad }}</span>
+              <span class="text-sm font-bold text-gray-900">{{ (item.precio_en_el_momento * item.cantidad).toFixed(2) }} €</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="flex justify-end items-center gap-6 px-5 py-3 bg-gray-50 border-t border-gray-100">
+        <span class="text-[13px] text-gray-500">
+          Productos: <strong class="text-gray-600">{{ subtotal(pedido.items).toFixed(2) }} €</strong>
+        </span>
+        <span class="text-gray-300 text-[13px]" aria-hidden="true">·</span>
+        <span class="text-[13px] text-gray-500">
+          Envío: <strong class="text-gray-600">{{ +pedido.gastos_envio > 0 ? pedido.gastos_envio + ' €' : 'Gratis' }}</strong>
+        </span>
+        <span class="text-gray-300 text-[13px]" aria-hidden="true">·</span>
+        <span class="text-[15px] font-bold text-naan-red">Total: {{ (subtotal(pedido.items) + +pedido.gastos_envio).toFixed(2) }} €</span>
+      </div>
+
+    </article>
+  }
+
+  }
+
+  }
+
+</div>

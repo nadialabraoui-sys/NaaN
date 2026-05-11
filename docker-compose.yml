@@ -1,0 +1,78 @@
+services:
+
+  naan-db:
+    image: mysql:8.0
+    container_name: naan-db
+    environment:
+      MYSQL_ROOT_PASSWORD: naan_root
+      MYSQL_DATABASE: naan_bbdd
+      MYSQL_USER: naan
+      MYSQL_PASSWORD: naan_pass
+    volumes:
+      - naan_db_data:/var/lib/mysql
+      - ./db/naan_bbdd.sql:/docker-entrypoint-initdb.d/naan_bbdd.sql:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - tfg_naan_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pnaan_root"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  naan-backend:
+    build:
+      context: ./tfg-backend
+      dockerfile: Dockerfile
+    container_name: naan-backend
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: NaaN
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: base64:iAf75+48DKhPODrp6+dC7is1fQPna/ArLDiIU0hJCR8=
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: naan-db
+      DB_PORT: 3306
+      DB_DATABASE: naan_bbdd
+      DB_USERNAME: naan
+      DB_PASSWORD: naan_pass
+      SANCTUM_STATEFUL_DOMAINS: localhost:4200
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      FILESYSTEM_DISK: public
+      GROQ_API_KEY:
+      STRIPE_KEY:
+      STRIPE_SECRET:
+    volumes:
+      - naan_storage:/var/www/html/storage/app/public
+    networks:
+      - tfg_naan_network
+    depends_on:
+      naan-db:
+        condition: service_healthy
+
+  naan-frontend:
+    build:
+      context: ./tfg-frontend
+      dockerfile: Dockerfile
+    container_name: naan-frontend
+    ports:
+      - "4200:4200"
+    networks:
+      - tfg_naan_network
+    depends_on:
+      - naan-backend
+
+volumes:
+  naan_db_data:
+  naan_storage:
+
+networks:
+  tfg_naan_network:
+    driver: bridge

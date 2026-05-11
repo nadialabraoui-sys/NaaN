@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+
+@theme {
+  --color-naan-red: #AE0000;
+  --color-naan-grey: #D9D9D9;
+  --color-naan-details: #D78080;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* spinner para carga de páginas */
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #AE0000;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}

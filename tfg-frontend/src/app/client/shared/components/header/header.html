@@ -1,0 +1,113 @@
+<header class="flex items-start justify-between px-6 pr-12 pt-5 pb-3 bg-white sticky top-0 z-[100]" role="banner">
+
+  <div class="w-30 flex items-center pt-1">
+    @if (mostrarHamburguesa()) {
+      <button
+        class="border-none cursor-pointer p-1 hover:text-naan-red"
+        (click)="hamburguesa.emit()"
+        aria-label="Abrir menú de navegación"
+      >
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    }
+  </div>
+
+  <div class="flex flex-col items-end gap-2">
+
+    <a routerLink="/" class="text-[25px] font-thin text-naan-red no-underline tracking-wide" aria-label="Inicio NaaN">
+      <span aria-hidden="true">&#123; </span>
+      <span class="inline-block skew-x-[-12deg]">NaaN</span>
+      <span aria-hidden="true"> &#125;</span>
+    </a>
+
+    <div class="flex flex-wrap items-center gap-2 relative justify-end">
+
+      <div class="relative flex items-center gap-1">
+        <label for="header-search" class="sr-only">Buscar productos</label>
+        <input
+          id="header-search"
+          type="search"
+          [(ngModel)]="query"
+          placeholder="Buscar..."
+          aria-label="Buscar productos"
+          (keydown)="pulsarEnter($event)"
+          class="border border-gray-300 rounded-md px-[10px] py-[5px] text-[13px] w-28 sm:w-40 outline-none transition-[border-color] duration-200 focus:border-naan-red"
+        />
+        <button
+          class="bg-transparent border border-gray-300 rounded-md p-[5px] cursor-pointer text-gray-500 flex items-center transition-[border-color,color] duration-200 hover:border-naan-red hover:text-naan-red"
+          (click)="toggleFiltros()"
+          aria-label="Filtrar productos"
+          [attr.aria-expanded]="mostrarFiltros()"
+          [attr.aria-controls]="'panel-filtros'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+          </svg>
+        </button>
+
+        @if (mostrarFiltros()) {
+          <div
+            id="panel-filtros"
+            class="absolute top-[calc(100%+8px)] right-0 bg-white border border-gray-200 rounded-[10px] p-4 w-60 shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-[200] flex flex-col gap-3"
+            role="region"
+            aria-label="Panel de filtros"
+          >
+            <div class="flex flex-col gap-[6px]">
+              <strong class="text-xs text-gray-600 uppercase">Precio</strong>
+              <div class="flex items-center gap-[6px]">
+                <input type="number" [(ngModel)]="minPrecio" placeholder="Mín" aria-label="Precio mínimo" min="0"
+                  class="border border-gray-300 rounded-md px-2 py-1 text-[13px] w-[70px] outline-none focus:border-naan-red"/>
+                <span class="text-gray-300 text-xs" aria-hidden="true">–</span>
+                <input type="number" [(ngModel)]="maxPrecio" placeholder="Máx" aria-label="Precio máximo" min="0"
+                  class="border border-gray-300 rounded-md px-2 py-1 text-[13px] w-[70px] outline-none focus:border-naan-red"/>
+              </div>
+            </div>
+            <div class="flex flex-col gap-[6px]">
+              <strong class="text-xs text-gray-600 uppercase">Talla</strong>
+              <div class="flex flex-wrap gap-[6px]">
+                @for (t of tallas; track t) {
+                  <label class="text-xs text-gray-500 flex items-center gap-[3px] cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="tallasMap[t]" [attr.aria-label]="'Talla ' + t"/> {{ t }}
+                  </label>
+                }
+              </div>
+            </div>
+            <div class="flex flex-col gap-[6px]">
+              <strong class="text-xs text-gray-600 uppercase">Color</strong>
+              <div class="flex flex-wrap gap-[6px]">
+                @for (c of colores; track c) {
+                  <label class="text-xs text-gray-500 flex items-center gap-[3px] cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="coloresMap[c]" [attr.aria-label]="'Color ' + c"/> {{ c }}
+                  </label>
+                }
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button (click)="resetearFiltros()"
+                class="flex-1 bg-transparent text-gray-500 border border-gray-300 rounded-md py-2 text-[13px] font-semibold cursor-pointer transition-[border-color,color] duration-150 hover:border-naan-red hover:text-naan-red"
+              >Restablecer</button>
+              <button (click)="buscar()"
+                class="flex-1 bg-naan-red text-white border-none rounded-md py-2 text-[13px] font-semibold cursor-pointer hover:bg-[#8b0000]"
+              >Buscar</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <a routerLink="/cesta" class="text-xs font-semibold text-gray-800 no-underline tracking-[0.05em] transition-colors duration-150 hover:text-naan-red">CESTA</a>
+      <span class="text-gray-300 text-xs" aria-hidden="true">|</span>
+      @if (!sesionIniciada()) {
+        <a routerLink="/login" class="text-xs font-semibold text-gray-800 no-underline tracking-[0.05em] transition-colors duration-150 hover:text-naan-red">LOGIN</a>
+      } @else {
+        <a routerLink="/perfil" class="text-xs font-semibold text-gray-800 no-underline tracking-[0.05em] transition-colors duration-150 hover:text-naan-red flex items-center gap-2" [attr.aria-label]="'Perfil de ' + nombreUsuario()">
+          {{ nombreUsuario() | uppercase }}
+          <span class="w-7 h-7 bg-naan-red rounded-full flex items-center justify-center text-white text-[11px] font-bold tracking-[0.5px] shrink-0" aria-hidden="true">{{ iniciales }}</span>
+        </a>
+      }
+    </div>
+
+  </div>
+
+</header>

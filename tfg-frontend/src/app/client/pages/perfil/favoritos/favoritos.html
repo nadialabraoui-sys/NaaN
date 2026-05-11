@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-5">
+
+  <h2 class="text-[22px] font-bold text-gray-900 m-0 mb-1">Mis favoritos</h2>
+
+  @if (vm$ | async; as vm) {
+
+    @if (vm.cargando) {
+      <div class="flex flex-col items-center gap-3 py-15 text-gray-300 text-sm" aria-live="polite" aria-busy="true">
+        <div class="spinner" role="status"><span class="sr-only">Cargando favoritos...</span></div>
+        <p>Cargando favoritos...</p>
+      </div>
+    } @else if (vm.error) {
+      <div class="flex flex-col items-center gap-3 py-15 text-gray-300 text-sm" role="alert">
+        <p>{{ vm.error }}</p>
+      </div>
+    } @else if (vm.favoritos.length === 0) {
+      <div class="flex flex-col items-center gap-3 py-15 text-gray-300 text-sm" aria-live="polite">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <p>Todavía no tienes ningún favorito.</p>
+      </div>
+    } @else {
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-4 justify-items-center"
+        role="list"
+        aria-label="Productos favoritos"
+      >
+        @for (fav of favoritosPagina(vm.favoritos); track fav.id_producto) {
+          @if (fav.producto) {
+            <app-tarjeta-producto
+              [producto]="fav.producto"
+              [activo]="!estaEliminado(fav.id_producto)"
+              [eliminado]="estaEliminado(fav.id_producto)"
+              (changed)="onFavoritoChanged(fav.id_producto, $event)"
+            ></app-tarjeta-producto>
+          }
+        }
+      </div>
+
+      <app-paginacion
+        [paginaActual]="paginaActual()"
+        [totalPaginas]="totalPaginas(vm.favoritos)"
+        [paginas]="paginas(vm.favoritos)"
+        (cambiarPagina)="irAPagina($event, vm.favoritos)"
+      ></app-paginacion>
+    }
+
+  }
+
+</div>

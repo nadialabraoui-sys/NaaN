@@ -1,0 +1,43 @@
+<div class="chat-wrapper">
+
+  <div class="chat-header">
+    <div>
+      <p class="chat-title">Chatbot virtual</p>
+      <p class="chat-subtitle">Asistente virtual 24H</p>
+    </div>
+  </div>
+
+  <ul class="chat-messages" #mensajesList role="log" aria-live="polite" aria-label="Conversación con el asistente">
+    @for (msg of mensajes; track $index) {
+      <li class="msg" [class.msg-user]="msg.role === 'user'" [class.msg-bot]="msg.role === 'assistant'">
+        <div class="bubble">{{ msg.content }}</div>
+      </li>
+    }
+    @if (enviando) {
+      <li class="msg msg-bot" aria-label="El asistente está escribiendo">
+        <div class="bubble typing">
+          <span></span><span></span><span></span>
+        </div>
+      </li>
+    }
+  </ul>
+
+  <div class="chat-input-row">
+    <textarea
+      [(ngModel)]="inputText"
+      (keydown)="onKeydown($event)"
+      placeholder="Escribe tu pregunta..."
+      rows="1"
+      [disabled]="enviando"
+      aria-label="Mensaje al asistente"
+      class="chat-input"
+    ></textarea>
+    <button
+      (click)="enviar()"
+      [disabled]="!inputText.trim() || enviando"
+      class="chat-send"
+      aria-label="Enviar mensaje"
+    >➤</button>
+  </div>
+
+</div>

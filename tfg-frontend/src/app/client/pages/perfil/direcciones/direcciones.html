@@ -1,0 +1,147 @@
+﻿<div class="flex flex-col gap-4">
+
+  <h2 class="text-[22px] font-bold text-gray-900 m-0 mb-1">Mis direcciones</h2>
+
+  @if (vm$ | async; as vm) {
+
+  @if (vm.cargando) {
+    <div class="flex justify-center py-12 text-gray-400 text-sm" aria-live="polite" aria-busy="true">
+      <div class="spinner" role="status"><span class="sr-only">Cargando direcciones...</span></div>
+    </div>
+  } @else if (vm.error) {
+    <div class="flex justify-center py-12 text-gray-400 text-sm" role="alert">
+      <p>{{ vm.error }}</p>
+    </div>
+  } @else {
+
+    @if (direcciones().length === 0 && !mostrarFormulario()) {
+      <div class="flex justify-center py-12 text-gray-400 text-sm" aria-live="polite">
+        <p>No tienes ninguna dirección guardada.</p>
+      </div>
+    }
+
+    @if (errorEliminar()) {
+      <p class="text-[13px] text-naan-red bg-red-50 rounded-md px-[14px] py-[10px] m-0" role="alert">{{ errorEliminar() }}</p>
+    }
+
+    @if (direcciones().length > 0) {
+      <div class="flex flex-col gap-3" role="list" aria-label="Direcciones guardadas">
+        @for (d of direcciones(); track d.id_direccion) {
+          <div
+            class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] p-5 flex items-center gap-5 transition-opacity duration-300"
+            [class.opacity-40]="eliminandoId() === d.id_direccion"
+            [class.pointer-events-none]="eliminandoId() === d.id_direccion"
+            role="listitem"
+          >
+            <div class="shrink-0 w-[52px] h-[52px] rounded-[10px] bg-blue-50 text-blue-700 flex items-center justify-center" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-7 h-7">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+            </div>
+
+            <div class="flex-1 flex flex-col gap-1 min-w-0">
+              <span class="text-[15px] font-bold text-gray-900">{{ d.calle }} {{ d.numero }}</span>
+              <span class="text-sm text-gray-500">{{ d.codigo_postal }} {{ d.ciudad }}, {{ d.provincia }}</span>
+              <span class="text-xs text-gray-400">{{ d.pais }}</span>
+            </div>
+
+            <button
+              (click)="eliminar(d)"
+              [disabled]="eliminandoId() === d.id_direccion"
+              class="bg-transparent border-none text-gray-400 text-xs font-semibold font-[inherit] cursor-pointer py-1 transition-colors duration-200 underline [text-underline-offset:3px] hover:text-naan-red disabled:cursor-not-allowed"
+              aria-label="Eliminar dirección"
+            >Eliminar</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (mostrarFormulario()) {
+      <div class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] p-6 flex flex-col gap-4" aria-label="Formulario nueva dirección">
+        <h3 class="text-[15px] font-bold text-gray-900 m-0">Añadir dirección</h3>
+
+        @if (errorForm()) {
+          <p class="text-[13px] text-naan-red bg-red-50 rounded-md px-[14px] py-[10px] m-0" role="alert">{{ errorForm() }}</p>
+        }
+
+        <div class="grid grid-cols-[1fr_120px] gap-3">
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Calle *</label>
+            <input type="text" [(ngModel)]="calle" placeholder="Nombre de la calle"
+              maxlength="150"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 transition-[border-color] duration-200 focus:border-naan-red focus:bg-white"/>
+          </div>
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Número *</label>
+            <input type="text" [(ngModel)]="numero" placeholder="12"
+              maxlength="10"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 transition-[border-color] duration-200 focus:border-naan-red focus:bg-white"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Ciudad *</label>
+            <input type="text" [(ngModel)]="ciudad" placeholder="Logroño"
+              maxlength="100"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 transition-[border-color] duration-200 focus:border-naan-red focus:bg-white"/>
+          </div>
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Provincia *</label>
+            <input type="text" [(ngModel)]="provincia" placeholder="La Rioja"
+              maxlength="100"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 transition-[border-color] duration-200 focus:border-naan-red focus:bg-white"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Código postal *</label>
+            <input type="text" [(ngModel)]="codigoPostal" placeholder="26001" maxlength="5"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 transition-[border-color] duration-200 focus:border-naan-red focus:bg-white"
+              [class.border-naan-red]="codigoPostal && !cpValido"/>
+            @if (codigoPostal && !cpValido) {
+              <span class="text-[11px] text-naan-red mt-[2px]">Código postal inválido</span>
+            }
+          </div>
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">País *</label>
+            <select [(ngModel)]="pais"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none bg-gray-50 cursor-pointer transition-[border-color] duration-200 focus:border-naan-red focus:bg-white">
+              @for (p of paises; track p) {
+                <option [value]="p">{{ p }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button (click)="cancelarFormulario()" [disabled]="guardando()"
+            class="bg-transparent border-[1.5px] border-gray-200 text-gray-500 px-5 py-[10px] rounded-lg text-sm font-semibold font-[inherit] cursor-pointer transition-[border-color] duration-200 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          >Cancelar</button>
+          <button (click)="guardar()" [disabled]="guardando()" [attr.aria-busy]="guardando()"
+            class="bg-naan-red text-white border-none px-[22px] py-[10px] rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] disabled:opacity-50 disabled:cursor-not-allowed"
+          >{{ guardando() ? 'Guardando...' : 'Guardar' }}</button>
+        </div>
+      </div>
+    }
+
+    @if (!mostrarFormulario()) {
+      <button
+        (click)="abrirFormulario()"
+        class="flex items-center gap-2 bg-transparent border-2 border-dashed border-gray-200 text-gray-500 px-5 py-4 rounded-[10px] text-sm font-semibold font-[inherit] cursor-pointer w-full transition-[border-color,color] duration-200 hover:border-naan-red hover:text-naan-red"
+        aria-label="Añadir nueva dirección"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-[18px] h-[18px] shrink-0" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Añadir dirección
+      </button>
+    }
+
+  }
+
+  }
+
+</div>

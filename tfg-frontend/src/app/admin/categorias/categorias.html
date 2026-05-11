@@ -1,0 +1,49 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Categorías</h1>
+    <button class="btn-crear" (click)="abrirModalCrear()">Crear categoría</button>
+  </div>
+
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtroBusqueda" />
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let categoria of categoriasFiltradas">
+        <td>{{ categoria.id_categoria }}</td>
+        <td>{{ categoria.nombre }}</td>
+        <td>{{ categoria.descripcion }}</td>
+        <td class="acciones">
+          <button class="btn-editar" (click)="abrirModal(categoria)">Editar</button>
+          <button class="btn-eliminar" (click)="eliminarCategoria(categoria.id_categoria)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ categoriaSeleccionada ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="formulario.nombre" />
+
+      <label>Descripción</label>
+      <textarea [(ngModel)]="formulario.descripcion"></textarea>
+
+      <div class="modal-acciones">
+        <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarCategoria()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

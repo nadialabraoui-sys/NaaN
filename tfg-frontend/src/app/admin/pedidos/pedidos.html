@@ -1,0 +1,71 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Pedidos</h1>
+  </div>
+
+  <div class="filtros">
+    <input
+      type="text"
+      placeholder="Buscar por ID..."
+      [(ngModel)]="filtroBusqueda"
+      (input)="aplicarFiltros()"
+    />
+    <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+      <option value="">Todos los estados</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="pagado">Pagado</option>
+      <option value="enviado">Enviado</option>
+      <option value="entregado">Entregado</option>
+      <option value="cancelado">Cancelado</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pedido of pedidos">
+        <td>{{ pedido.id_pedido }}</td>
+        <td>{{ getEmailUsuario(pedido.id_usuario) }}</td>
+        <td>{{ pedido.total }}€</td>
+        <td>
+          <span
+            class="badge"
+            [class.pendiente]="pedido.estado === 'pendiente'"
+            [class.pagado]="pedido.estado === 'pagado'"
+            [class.enviado]="pedido.estado === 'enviado'"
+            [class.entregado]="pedido.estado === 'entregado'"
+            [class.cancelado]="pedido.estado === 'cancelado'"
+          >
+            {{ pedido.estado }}
+          </span>
+        </td>
+        <td>{{ pedido.fecha }}</td>
+        <td class="acciones">
+          <button
+            class="btn-toggle"
+            *ngIf="puedeAvanzar(pedido.estado)"
+            (click)="avanzarEstado(pedido)"
+          >
+            Avanzar estado
+          </button>
+          <button
+            class="btn-eliminar"
+            *ngIf="puedeCancelar(pedido.estado)"
+            (click)="cancelarPedido(pedido)"
+          >
+            Cancelar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

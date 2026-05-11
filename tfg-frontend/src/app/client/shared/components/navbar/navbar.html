@@ -1,0 +1,106 @@
+<div
+  class="hidden fixed inset-0 bg-black/50 z-[150]"
+  [class.block]="isOpen()"
+  [class.hidden]="!isOpen()"
+  (click)="close()"
+  aria-hidden="true"
+></div>
+
+<aside
+  class="fixed top-0 left-0 h-full w-[280px] bg-white z-[200] shadow-[4px_0_20px_rgba(0,0,0,0.12)] -translate-x-full transition-transform duration-300 ease-in-out flex flex-col"
+  [class.translate-x-0]="isOpen()"
+  [class.-translate-x-full]="!isOpen()"
+  role="navigation"
+  [attr.inert]="!isOpen() ? '' : null"
+  aria-label="Menú de navegación"
+>
+
+  <header class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+    <a routerLink="/" class="text-2xl text-naan-red no-underline" (click)="close()" aria-label="Inicio NaaN">
+      <span aria-hidden="true">&#123; </span>
+      <span class="inline-block skew-x-[-12deg]">NaaN</span>
+      <span aria-hidden="true"> &#125;</span>
+    </a>
+    <button
+      type="button"
+      (click)="close()"
+      class="bg-transparent border-none cursor-pointer text-gray-500 p-1 rounded-md flex items-center hover:text-naan-red"
+      aria-label="Cerrar menú"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav class="flex-1 overflow-y-auto">
+    <ul class="list-none m-0 p-0">
+      @for (item of menuItems(); track item.label; let first = $first) {
+        <li
+          (mouseenter)="item.children?.length ? expandSubmenu(item.label) : null"
+          (mouseleave)="item.children?.length ? collapseSubmenu(item.label) : null"
+        >
+          @if (item.children && item.children.length > 0) {
+            <div class="flex items-center justify-between w-full">
+              <button
+                type="button"
+                class="flex-1 flex items-center px-5 pb-4 text-[15px] font-bold tracking-[0.12em] uppercase text-gray-800 bg-transparent border-none cursor-pointer no-underline text-left transition-[color,padding-left] duration-150 hover:text-naan-red hover:pl-[26px]"
+                [class.pt-6]="first"
+                [class.pt-20]="!first"
+                (click)="navegarYCerrar(item.route!, item.queryParams)"
+              >
+                {{ item.label }}
+              </button>
+              <button
+                type="button"
+                class="bg-transparent border-none cursor-pointer px-4 pb-4 flex items-center hover:text-naan-red"
+                [class.pt-6]="first"
+                [class.pt-20]="!first"
+                [attr.aria-expanded]="!!expandedItems()[item.label]"
+                [attr.aria-label]="'Expandir ' + item.label"
+                (click)="toggleSubmenu(item.label)"
+              >
+                <svg
+                  class="shrink-0 transition-transform duration-200 text-gray-400"
+                  [class.rotate-180]="expandedItems()[item.label]"
+                  [class.text-naan-red]="expandedItems()[item.label]"
+                  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+            </div>
+
+            <ul
+              class="list-none m-0 p-0 bg-gray-50 overflow-hidden transition-[max-height] duration-300 ease-in-out"
+              [class.max-h-0]="!expandedItems()[item.label]"
+              [class.max-h-[400px]]="expandedItems()[item.label]"
+              role="list"
+            >
+              @for (child of item.children; track child.label) {
+                <li>
+                  
+                <a    [routerLink]="child.route"
+                    [queryParams]="child.queryParams"
+                    class="block px-5 py-2 pl-8 text-[13px] text-gray-500 no-underline transition-[color,padding-left] duration-150 hover:text-naan-red hover:pl-[38px]"
+                    (click)="close()"
+                  >{{ child.label }}</a>
+                </li>
+              }
+            </ul>
+          } @else {
+            
+             <a [routerLink]="item.route"
+              class="flex items-center justify-between w-full px-5 pb-4 text-[15px] font-bold tracking-[0.12em] uppercase text-gray-800 no-underline transition-[color,padding-left] duration-150 hover:text-naan-red hover:pl-[26px]"
+              [class.pt-6]="first"
+              [class.pt-20]="!first"
+              (click)="close()"
+            >{{ item.label }}</a>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+
+</aside>

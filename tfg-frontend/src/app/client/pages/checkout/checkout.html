@@ -1,0 +1,315 @@
+<div class="h-screen flex flex-col bg-white">
+
+  <a routerLink="/" 
+   class="absolute top-3 right-10 text-[25px] font-thin text-naan-red flex flex-row no-underline tracking-wide" 
+   aria-label="Inicio NaaN">
+  <span aria-hidden="true">&#123;&nbsp;</span>
+  <span class="inline-block skew-x-[-12deg]">NaaN</span>
+  <span aria-hidden="true">&nbsp;&#125;</span>
+</a>
+
+  @if (vm$ | async; as vm) {
+
+    @if (vm.cargando) {
+      <div class="flex flex-col items-center gap-3 py-20 text-gray-400 text-sm flex-1" aria-live="polite" aria-busy="true">
+        <div class="spinner" role="status"><span class="sr-only">Cargando...</span></div>
+        <p>Cargando...</p>
+      </div>
+    } @else if (vm.error) {
+      <div class="flex flex-col items-center gap-3 py-20 text-sm flex-1" role="alert">
+        <p class="text-naan-red">{{ vm.error }}</p>
+      </div>
+    } @else {
+
+      <div class="flex flex-1 overflow-hidden max-md:flex-col max-md:overflow-y-auto">
+
+        <!-- izq -->
+        <section class="w-1/2 overflow-y-auto flex flex-col max-md:w-full max-md:overflow-visible" aria-label="Pago y envío">
+
+          <!-- metodos de pago -->
+          <div class="px-10 py-8 max-md:px-6">
+            <h2 class="text-[15px] font-bold uppercase tracking-widest text-black italic -skew-x-12 m-0 mb-6">Método de pago</h2>
+
+            @if (metodosGuardados().length > 0) {
+              <div class="flex flex-col gap-1 mb-4" role="radiogroup" aria-label="Seleccionar método de pago">
+                @for (m of metodosGuardados(); track m.id_metodo_pago) {
+                  <label class="flex items-center gap-3 px-2 py-2 cursor-pointer">
+                    <input type="radio" name="metodo-pago" [value]="m.id_metodo_pago" [(ngModel)]="idMetodoPago" class="accent-[#AE0000]"/>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-black">{{ labelMetodo(m.tipo) }}</span>
+                      <span class="text-xs text-gray-500">{{ m.numero_enmascarado }}</span>
+                    </div>
+                    @if (m.es_predeterminado) {
+                      <span class="ml-auto text-[11px] text-naan-red font-semibold">Predeterminado</span>
+                    }
+                  </label>
+                }
+              </div>
+            }
+
+            @if (!mostrarFormulario()) {
+              <button
+                (click)="abrirFormulario()"
+                class="flex items-center gap-2 bg-transparent border border-black text-black text-sm font-semibold font-[inherit] cursor-pointer px-3 py-2 rounded-lg hover:border-naan-red hover:text-naan-red transition-colors duration-200"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4 shrink-0" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Añadir método de pago
+              </button>
+            }
+
+            @if (mostrarFormulario()) {
+              <div class="flex flex-col gap-4 pt-2">
+                <h3 class="text-[13px] font-bold uppercase tracking-widest italic -skew-x-12 m-0 text-black">Nuevo método de pago</h3>
+
+                <div class="flex gap-2 flex-wrap" role="group" aria-label="Tipo de método">
+                  @for (t of tipos; track t.valor) {
+                    <button
+                      type="button"
+                      class="px-4 py-[6px] rounded-full border border-black text-black text-[13px] font-semibold font-[inherit] cursor-pointer transition-all duration-200 hover:border-naan-red hover:text-naan-red"
+                      [class.bg-naan-red]="tipoSeleccionado === t.valor"
+                      [class.border-naan-red]="tipoSeleccionado === t.valor"
+                      [class.text-white]="tipoSeleccionado === t.valor"
+                      (click)="tipoSeleccionado = t.valor"
+                    >{{ t.label }}</button>
+                  }
+                </div>
+
+                @if (errorForm()) {
+                  <p class="text-[13px] text-naan-red m-0" role="alert">{{ errorForm() }}</p>
+                }
+
+                @if (mostrarTitular()) {
+                  <div class="flex flex-col gap-[6px]">
+                    <label class="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.8px]">Nombre del titular *</label>
+                    <div class="relative">
+                      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                      <input type="text" [(ngModel)]="nombreTitular" placeholder="Como aparece en la tarjeta"
+                        class="w-full pl-9 pr-3 py-[11px] border border-gray-200 rounded-lg text-sm font-[inherit] outline-none bg-white transition-all duration-200 focus:border-naan-red focus:ring-2 focus:ring-naan-red/10 placeholder:text-gray-300"/>
+                    </div>
+                  </div>
+                }
+
+                @if (tipoSeleccionado !== 'bizum') {
+                  <div class="flex flex-col gap-[6px]">
+                    <label class="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.8px]">{{ labelCampo() }}</label>
+                    <div class="relative">
+                      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      <input type="text" [(ngModel)]="campoTexto" [placeholder]="placeholderCampo()"
+                        class="w-full pl-9 pr-3 py-[11px] border border-gray-200 rounded-lg text-sm font-[inherit] outline-none bg-white transition-all duration-200 focus:border-naan-red focus:ring-2 focus:ring-naan-red/10 placeholder:text-gray-300"/>
+                    </div>
+                  </div>
+                }
+
+                @if (tipoSeleccionado === 'bizum') {
+                  <div class="flex flex-col gap-[6px]">
+                    <label class="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.8px]">Número de teléfono *</label>
+                    <div class="flex">
+                      <select [(ngModel)]="codigoPaisBizum" aria-label="Código de país"
+                        class="shrink-0 px-2 py-[11px] border border-gray-200 border-r-0 rounded-l-lg text-sm font-[inherit] bg-white outline-none cursor-pointer focus:border-naan-red">
+                        @for (p of paises; track p.codigo) {
+                          <option [value]="p.codigo">{{ p.bandera }} {{ p.codigo }}</option>
+                        }
+                      </select>
+                      <input type="tel" [(ngModel)]="telefonoNumeroBizum" placeholder="600 000 000"
+                        class="flex-1 px-3 py-[11px] border border-gray-200 rounded-r-lg text-sm font-[inherit] outline-none bg-white transition-all duration-200 focus:border-naan-red focus:ring-2 focus:ring-naan-red/10 placeholder:text-gray-300"/>
+                    </div>
+                  </div>
+                }
+
+                @if (mostrarFecha()) {
+                  <div class="flex flex-col gap-[6px]">
+                    <label class="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.8px]">Fecha de caducidad *</label>
+                    <div class="relative">
+                      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <input type="date" [(ngModel)]="fechaNueva"
+                        class="w-full pl-9 pr-3 py-[11px] border border-gray-200 rounded-lg text-sm font-[inherit] outline-none bg-white transition-all duration-200 focus:border-naan-red focus:ring-2 focus:ring-naan-red/10"/>
+                    </div>
+                  </div>
+                }
+
+                <div class="flex justify-end gap-3">
+                  <button type="button" (click)="cancelarFormulario()" [disabled]="guardando()"
+                    class="bg-transparent border border-black text-black px-5 py-[9px] rounded-lg text-sm font-semibold font-[inherit] cursor-pointer transition-colors duration-200 hover:border-naan-red hover:text-naan-red disabled:opacity-50"
+                  >Cancelar</button>
+                  <button type="button" (click)="guardarMetodo()" [disabled]="guardando()"
+                    class="bg-naan-red text-white border border-naan-red px-5 py-[9px] rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-colors duration-200 hover:bg-naan-details hover:border-naan-details disabled:opacity-50"
+                  >{{ guardando() ? 'Guardando...' : 'Guardar' }}</button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="h-px bg-black mx-10 shrink-0 max-md:mx-6"></div>
+
+          <!-- direcciones de envio -->
+          <div class="px-10 py-8 max-md:px-6">
+            <h2 class="text-[15px] font-bold uppercase tracking-widest text-black italic -skew-x-12 m-0 mb-6">Dirección de envío</h2>
+            @if (vm.direcciones.length > 0) {
+              <div class="flex flex-col gap-1" role="radiogroup" aria-label="Seleccionar dirección">
+                @for (d of vm.direcciones; track d.id_direccion) {
+                  <label class="flex items-center gap-3 px-2 py-2 cursor-pointer">
+                    <input type="radio" name="direccion" [value]="d.id_direccion" [(ngModel)]="idDireccion" class="accent-[#AE0000]"/>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-black">{{ d.calle }} {{ d.numero }}</span>
+                      <span class="text-xs text-gray-500">{{ d.codigo_postal }} {{ d.ciudad }}, {{ d.provincia }}</span>
+                    </div>
+                  </label>
+                }
+              </div>
+            } @else {
+              <p class="text-sm text-black m-0 mb-2">No tienes direcciones guardadas.</p>
+              <a routerLink="/perfil" class="text-sm text-naan-red font-semibold no-underline hover:underline">Añadir dirección →</a>
+            }
+          </div>
+
+        </section>
+
+        <div class="w-px bg-black shrink-0 my-8 max-md:w-full max-md:h-px max-md:my-0 max-md:mx-6"></div>
+
+        <!-- dcha -->
+        <section class="w-1/2 flex flex-col max-md:w-full" aria-label="Resumen del pedido">
+
+          <div class="px-10 py-8 shrink-0 max-md:px-6">
+            <h2 class="text-[15px] font-bold uppercase tracking-widest text-black italic -skew-x-12 m-0">Resumen del pedido</h2>
+          </div>
+
+          <div class="h-px bg-black mx-10 shrink-0 max-md:mx-6"></div>
+
+          <div class="flex-1 overflow-y-auto px-10 py-6 max-md:px-6 max-md:overflow-visible" role="list" aria-label="Productos en el pedido">
+            @for (item of vm.items; track $index) {
+              <div class="flex items-center gap-4 py-4 border-b border-gray-200 last:border-b-0" role="listitem">
+                <div class="w-[56px] h-[70px] shrink-0 bg-gray-100 overflow-hidden rounded-md">
+                  @if (item.producto?.imagen) {
+                    <img [src]="'assets/' + item.producto.imagen" [alt]="item.producto?.nombre" class="w-full h-full object-cover block"/>
+                  }
+                </div>
+                <div class="flex-1 flex flex-col gap-[3px] min-w-0">
+                  <span class="text-[13px] font-semibold text-black truncate">{{ item.producto?.nombre || 'Producto #' + item.id_producto }}</span>
+                  <span class="text-xs text-gray-500">x{{ item.cantidad }}</span>
+                  @if (item.talla) {
+                    <span class="text-xs text-gray-400">Talla: {{ item.talla }}</span>
+                  }
+                </div>
+                <span class="text-sm font-bold text-black shrink-0">{{ (item.precio_unitario * item.cantidad) | number:'1.2-2' }} €</span>
+              </div>
+            }
+          </div>
+
+          <!-- total -->
+          <div class="px-10 py-6 flex flex-col gap-3 shrink-0 max-md:px-6">
+            <div class="flex justify-between text-sm text-black">
+              <span>Subtotal</span>
+              <span>{{ subtotal(vm.items) | number:'1.2-2' }} €</span>
+            </div>
+            <div class="flex justify-between text-sm text-black">
+              <span>Gastos de envío</span>
+              <span>{{ GASTOS_ENVIO | number:'1.2-2' }} €</span>
+            </div>
+            <div class="flex justify-between items-baseline border-t border-black pt-3 mt-1">
+              <span class="text-base font-bold text-black">Total</span>
+              <strong class="text-2xl font-extrabold text-black">{{ totalFinal(vm.items) }} €</strong>
+            </div>
+
+            @if (errorPago()) {
+              <p class="text-sm text-naan-red m-0 font-medium" role="alert">{{ errorPago() }}</p>
+            }
+
+            <div class="flex justify-end mt-1">
+              <button
+                class="px-8 py-2 bg-naan-red text-white border border-naan-red rounded-lg text-sm font-bold cursor-pointer transition-colors duration-200 hover:bg-naan-details hover:border-naan-details disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="pagar()"
+                [disabled]="procesando()"
+                [attr.aria-busy]="procesando()"
+              >
+                {{ procesando() ? 'Iniciando pago...' : 'Pagar' }}
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    }
+
+  }
+
+</div>
+
+<!-- pago con stripe -->
+@if (mostrarStripeModal()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Pago con tarjeta"
+  >
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+
+      <div class="flex items-center justify-between px-7 pt-6 pb-4 border-b border-gray-100">
+        <div>
+          <h2 class="text-[15px] font-bold uppercase tracking-widest italic -skew-x-12 m-0 text-black">Datos de pago</h2>
+          <p class="text-xs text-gray-500 mt-1 m-0">Pago seguro con Stripe</p>
+        </div>
+        <button
+          type="button"
+          (click)="cerrarStripeModal()"
+          [disabled]="confirmando()"
+          class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:border-naan-red hover:text-naan-red transition-colors duration-200 disabled:opacity-40 cursor-pointer bg-transparent"
+          aria-label="Cerrar"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-7 py-6 flex flex-col gap-5">
+
+        <div class="flex flex-col gap-[6px]">
+          <label class="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.8px]">Número de tarjeta, fecha y CVC</label>
+          <div
+            id="stripe-card-element"
+            class="w-full px-3 py-[13px] border border-gray-200 rounded-lg bg-white transition-all duration-200 focus-within:border-naan-red focus-within:ring-2 focus-within:ring-naan-red/10"
+          ></div>
+        </div>
+
+        @if (stripeError()) {
+          <p class="text-[13px] text-naan-red m-0 font-medium" role="alert">{{ stripeError() }}</p>
+        }
+
+      </div>
+
+      <div class="px-7 pb-6 flex flex-col gap-3">
+        <button
+          type="button"
+          (click)="confirmarConStripe()"
+          [disabled]="confirmando()"
+          class="w-full py-3 bg-naan-red text-white rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-colors duration-200 hover:bg-naan-details disabled:opacity-50 disabled:cursor-not-allowed border-0"
+          [attr.aria-busy]="confirmando()"
+        >
+          @if (confirmando()) {
+            <span class="flex items-center justify-center gap-2">
+              <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10" opacity="0.3"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              Procesando pago...
+            </span>
+          } @else {
+            Confirmar pedido
+          }
+        </button>
+
+        <button
+          type="button"
+          (click)="cerrarStripeModal()"
+          [disabled]="confirmando()"
+          class="w-full py-[10px] bg-transparent border border-black text-black rounded-lg text-sm font-semibold font-[inherit] cursor-pointer transition-colors duration-200 hover:border-naan-red hover:text-naan-red disabled:opacity-50"
+        >Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,47 @@
+<app-header [mostrarHamburguesa]="true" (hamburguesa)="navbarRef.toggle()"></app-header>
+<app-navbar #navbarRef></app-navbar>
+
+<main class="px-6 sm:px-16 lg:px-40 py-7 min-h-[calc(100vh-52px)] bg-white" aria-label="Catálogo de productos">
+  <h1 class="text-[22px] font-bold text-naan-red m-0 mb-6 capitalize skew-x-[-12deg]">{{ tituloSeccion() | uppercase }}</h1>
+
+  @if (vm$ | async; as vm) {
+
+    @if (vm.cargando) {
+      <div class="flex flex-col items-center gap-3 py-20 text-gray-400 text-sm" aria-live="polite" aria-busy="true">
+        <div class="spinner" role="status"><span class="sr-only">Cargando productos...</span></div>
+        <p>Cargando productos...</p>
+      </div>
+    } @else if (vm.error) {
+      <div class="flex flex-col items-center gap-3 py-20 text-sm" role="alert">
+        <p class="text-naan-red">{{ vm.error }}</p>
+      </div>
+    } @else if (filtrados(vm.productos).length === 0) {
+      <div class="flex flex-col items-center gap-3 py-20 text-gray-400 text-sm" aria-live="polite">
+        <p>No se encontraron productos.</p>
+      </div>
+    } @else {
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 sm:gap-12 lg:gap-24"
+        role="list"
+        aria-label="Lista de productos"
+      >
+        @for (p of paginaItems(vm.productos); track p.id_producto) {
+          <app-tarjeta-producto
+            [producto]="p"
+            [activo]="vm.favoritos.has(p.id_producto)"
+          ></app-tarjeta-producto>
+        }
+      </div>
+
+      <app-paginacion
+        class="pt-5 block"
+        [paginaActual]="paginaActual()"
+        [totalPaginas]="totalPaginas(vm.productos)"
+        [paginas]="numPaginas(vm.productos)"
+        (cambiarPagina)="irAPagina($event, vm.productos)"
+      ></app-paginacion>
+    }
+
+  }
+
+</main>

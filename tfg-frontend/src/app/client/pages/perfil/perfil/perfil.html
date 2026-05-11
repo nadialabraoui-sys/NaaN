@@ -1,0 +1,217 @@
+﻿<div class="flex flex-col gap-5">
+
+  @if (vm$ | async; as vm) {
+
+  @if (vm.cargando) {
+    <div class="flex justify-center py-15 text-gray-400 text-sm" aria-live="polite" aria-busy="true">
+      <div class="spinner" role="status"><span class="sr-only">Cargando perfil...</span></div>
+    </div>
+  } @else if (vm.error) {
+    <div class="flex justify-center py-15 text-gray-400 text-sm" role="alert">
+      <p>{{ vm.error }}</p>
+    </div>
+  } @else if (usuario()) {
+
+    <div class="flex items-center gap-5 py-6 pb-2">
+      <div class="w-16 h-16 rounded-full bg-naan-red text-white text-[26px] font-bold flex items-center justify-center shrink-0" aria-hidden="true">
+        {{ iniciales }}
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-gray-900 m-0 mb-1">{{ usuario()?.nombre }}</h2>
+        @if (usuario()?.fecha_registro) {
+          <p class="text-[13px] text-gray-400 m-0">
+            Miembro desde {{ formatearFecha(usuario()?.fecha_registro) }}
+          </p>
+        }
+      </div>
+    </div>
+
+    <section class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] p-6 flex flex-col gap-[18px]" aria-label="Datos personales">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[15px] font-bold text-gray-900 m-0">Datos personales</h3>
+        @if (!editandoPersonal()) {
+          <button (click)="abrirPersonal()"
+            class="bg-transparent border-none text-[13px] font-semibold text-naan-red cursor-pointer p-1 font-[inherit] underline [text-underline-offset:3px] hover:text-[#8b0000]"
+            aria-label="Editar datos personales"
+          >Editar</button>
+        }
+      </div>
+
+      @if (okPersonal()) {
+        <p class="text-[13px] text-green-800 bg-green-50 rounded-md px-[14px] py-[10px] m-0" role="status">{{ okPersonal() }}</p>
+      }
+
+      @if (!editandoPersonal()) {
+        <dl class="flex flex-col gap-[14px]">
+          <div class="flex justify-between items-center pb-[14px] border-b border-gray-100">
+            <dt class="text-[13px] text-gray-500 shrink-0">Nombre completo</dt>
+            <dd class="text-sm text-gray-900 font-medium text-right m-0">{{ usuario()?.nombre || '—' }}</dd>
+          </div>
+          <div class="flex justify-between items-center">
+            <dt class="text-[13px] text-gray-500 shrink-0">Fecha de nacimiento</dt>
+            <dd class="text-sm text-gray-900 font-medium text-right m-0">{{ formatearFecha(usuario()?.fecha_nacimiento) }}</dd>
+          </div>
+        </dl>
+      }
+
+      @if (editandoPersonal()) {
+        <div class="flex flex-col gap-4">
+          @if (errorPersonal()) {
+            <p class="text-[13px] text-naan-red bg-red-50 rounded-md px-[14px] py-[10px] m-0" role="alert">{{ errorPersonal() }}</p>
+          }
+          <div class="flex flex-col gap-[6px]">
+            <label for="nombre-edit" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Nombre completo *</label>
+            <input id="nombre-edit" type="text" [(ngModel)]="nombreEdit" placeholder="Tu nombre completo"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          </div>
+          <div class="flex flex-col gap-[6px]">
+            <label for="fecha-edit" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Fecha de nacimiento</label>
+            <input id="fecha-edit" type="date" [(ngModel)]="fechaEdit"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          </div>
+          <div class="flex justify-end gap-3 mt-1">
+            <button (click)="cancelarPersonal()" [disabled]="guardandoPersonal()"
+              class="bg-transparent border-[1.5px] border-gray-200 text-gray-500 px-5 py-[10px] rounded-lg text-sm font-semibold font-[inherit] cursor-pointer transition-[border-color,color] duration-200 hover:border-gray-400 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >Cancelar</button>
+            <button (click)="guardarPersonal()" [disabled]="guardandoPersonal()" [attr.aria-busy]="guardandoPersonal()"
+              class="bg-naan-red text-white border-none px-[22px] py-[10px] rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] disabled:opacity-50 disabled:cursor-not-allowed"
+            >{{ guardandoPersonal() ? 'Guardando...' : 'Guardar cambios' }}</button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] p-6 flex flex-col gap-[18px]" aria-label="Datos de contacto">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[15px] font-bold text-gray-900 m-0">Datos de contacto</h3>
+        @if (!editandoContacto()) {
+          <button (click)="abrirContacto()"
+            class="bg-transparent border-none text-[13px] font-semibold text-naan-red cursor-pointer p-1 font-[inherit] underline [text-underline-offset:3px] hover:text-[#8b0000]"
+            aria-label="Editar datos de contacto"
+          >Editar</button>
+        }
+      </div>
+
+      @if (okContacto()) {
+        <p class="text-[13px] text-green-800 bg-green-50 rounded-md px-[14px] py-[10px] m-0" role="status">{{ okContacto() }}</p>
+      }
+
+      @if (!editandoContacto()) {
+        <dl class="flex flex-col gap-[14px]">
+          <div class="flex justify-between items-center pb-[14px] border-b border-gray-100">
+            <dt class="text-[13px] text-gray-500 shrink-0">Correo electrónico</dt>
+            <dd class="text-sm text-gray-900 font-medium text-right m-0">{{ usuario()?.email || '—' }}</dd>
+          </div>
+          <div class="flex justify-between items-center">
+            <dt class="text-[13px] text-gray-500 shrink-0">Teléfono</dt>
+            <dd class="text-sm text-gray-900 font-medium text-right m-0">{{ usuario()?.telefono || '—' }}</dd>
+          </div>
+        </dl>
+      }
+
+      @if (editandoContacto()) {
+        <div class="flex flex-col gap-4">
+          @if (errorContacto()) {
+            <p class="text-[13px] text-naan-red bg-red-50 rounded-md px-[14px] py-[10px] m-0" role="alert">{{ errorContacto() }}</p>
+          }
+          <div class="flex flex-col gap-[6px]">
+            <label for="email-edit" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Correo electrónico *</label>
+            <input id="email-edit" type="email" [(ngModel)]="emailEdit" placeholder="tu@email.com"
+              class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          </div>
+          <div class="flex flex-col gap-[6px]">
+            <label class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Teléfono</label>
+            <div class="flex">
+              <select [(ngModel)]="codigoPaisEdit" aria-label="Código de país"
+                class="shrink-0 px-[10px] py-[11px] border-[1.5px] border-gray-200 border-r-0 rounded-l-lg text-sm font-[inherit] text-gray-900 bg-gray-50 outline-none cursor-pointer transition-[border-color] duration-200 focus:border-naan-red focus:bg-white">
+                @for (p of paises; track p.codigo) {
+                  <option [value]="p.codigo">{{ p.bandera }} {{ p.codigo }}</option>
+                }
+              </select>
+              <input type="tel" [(ngModel)]="telefonoNumeroEdit" placeholder="600 000 000" aria-label="Número de teléfono"
+                maxlength="9" (keypress)="soloNumeros($event)"
+                class="flex-1 px-[14px] py-[11px] border-[1.5px] border-gray-200 rounded-r-lg rounded-l-none text-sm font-[inherit] text-gray-900 outline-none transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-1">
+            <button (click)="cancelarContacto()" [disabled]="guardandoContacto()"
+              class="bg-transparent border-[1.5px] border-gray-200 text-gray-500 px-5 py-[10px] rounded-lg text-sm font-semibold font-[inherit] cursor-pointer transition-[border-color,color] duration-200 hover:border-gray-400 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >Cancelar</button>
+            <button (click)="guardarContacto()" [disabled]="guardandoContacto()" [attr.aria-busy]="guardandoContacto()"
+              class="bg-naan-red text-white border-none px-[22px] py-[10px] rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] disabled:opacity-50 disabled:cursor-not-allowed"
+            >{{ guardandoContacto() ? 'Guardando...' : 'Guardar cambios' }}</button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="bg-white rounded-[10px] shadow-[0_1px_4px_rgba(0,0,0,0.08)] p-6 flex flex-col gap-[18px]" aria-label="Cambiar contraseña">
+      <h3 class="text-[15px] font-bold text-gray-900 m-0">Contraseña</h3>
+
+      @if (okContra()) {
+        <p class="text-[13px] text-green-800 bg-green-50 rounded-md px-[14px] py-[10px] m-0" role="status">{{ okContra() }}</p>
+      }
+      @if (errorContra()) {
+        <p class="text-[13px] text-naan-red bg-red-50 rounded-md px-[14px] py-[10px] m-0" role="alert">{{ errorContra() }}</p>
+      }
+
+      <div class="flex flex-col gap-4">
+
+        <div class="flex flex-col gap-[6px] relative">
+          <label for="contra-actual" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Contraseña actual *</label>
+          <input id="contra-actual" [type]="verActual ? 'text' : 'password'" [(ngModel)]="contraActual" placeholder="••••••"
+            class="w-full px-[14px] py-[11px] pr-[44px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          <button type="button" (click)="verActual = !verActual"
+            [attr.aria-label]="verActual ? 'Ocultar contraseña' : 'Mostrar contraseña'" [attr.aria-pressed]="verActual"
+            class="absolute right-3 bottom-[11px] bg-transparent border-none cursor-pointer p-0 text-gray-400 flex items-center transition-colors duration-200 hover:text-naan-red">
+            @if (!verActual) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            }
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-[6px] relative">
+          <label for="contra-nueva" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Nueva contraseña *</label>
+          <input id="contra-nueva" [type]="verNueva ? 'text' : 'password'" [(ngModel)]="contraNueva" placeholder="Mínimo 6 caracteres"
+            class="w-full px-[14px] py-[11px] pr-[44px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          <button type="button" (click)="verNueva = !verNueva"
+            [attr.aria-label]="verNueva ? 'Ocultar contraseña' : 'Mostrar contraseña'" [attr.aria-pressed]="verNueva"
+            class="absolute right-3 bottom-[11px] bg-transparent border-none cursor-pointer p-0 text-gray-400 flex items-center transition-colors duration-200 hover:text-naan-red">
+            @if (!verNueva) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            }
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-[6px] relative">
+          <label for="contra-repetir" class="text-[12px] text-gray-500 font-semibold uppercase tracking-[0.5px]">Repetir nueva contraseña *</label>
+          <input id="contra-repetir" [type]="verRepetir ? 'text' : 'password'" [(ngModel)]="contraRepetir" placeholder="••••••"
+            class="w-full px-[14px] py-[11px] pr-[44px] border-[1.5px] border-gray-200 rounded-lg text-sm font-[inherit] text-gray-900 outline-none box-border transition-[border-color] duration-200 bg-gray-50 focus:border-naan-red focus:bg-white"/>
+          <button type="button" (click)="verRepetir = !verRepetir"
+            [attr.aria-label]="verRepetir ? 'Ocultar contraseña' : 'Mostrar contraseña'" [attr.aria-pressed]="verRepetir"
+            class="absolute right-3 bottom-[11px] bg-transparent border-none cursor-pointer p-0 text-gray-400 flex items-center transition-colors duration-200 hover:text-naan-red">
+            @if (!verRepetir) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            }
+          </button>
+        </div>
+
+        <div class="flex justify-end mt-1">
+          <button (click)="guardarContrasena()" [disabled]="guardandoContra()" [attr.aria-busy]="guardandoContra()"
+            class="bg-naan-red text-white border-none px-[22px] py-[10px] rounded-lg text-sm font-bold font-[inherit] cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] disabled:opacity-50 disabled:cursor-not-allowed"
+          >{{ guardandoContra() ? 'Cambiando...' : 'Cambiar contraseña' }}</button>
+        </div>
+      </div>
+    </section>
+
+  }
+
+  }
+
+</div>

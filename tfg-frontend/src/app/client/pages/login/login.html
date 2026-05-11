@@ -1,0 +1,94 @@
+﻿<div class="min-h-screen flex items-center justify-center bg-white">
+  <div class="w-full max-w-[420px] px-10 py-12 flex flex-col gap-5">
+    
+<a class="text-naan-red flex justify-center font-bold text-7xl mb-10 " routerLink="/landing">
+    <div aria-hidden="true" >&#123; &nbsp;</div>
+              <span class="inline-block skew-x-[-12deg]">NaaN</span>
+              <div aria-hidden="true">&nbsp; &#125;</div>
+</a>
+
+    <h1 class="text-[1.3rem] font-bold text-center text-gray-900 m-0">Bienvenido/a de vuelta</h1>
+
+    @if (error) {
+      <div
+        class="bg-red-50 text-naan-red px-[14px] py-[10px] rounded-md text-[13px] text-center"
+        role="alert"
+        aria-live="assertive"
+      >{{ error }}</div>
+    }
+
+    <form (ngSubmit)="acceder()" class="flex flex-col gap-[14px]" novalidate>
+
+      <div>
+        <label for="email-login" class="sr-only">Correo electrónico</label>
+        <input
+          id="email-login"
+          type="email"
+          placeholder="Correo electrónico"
+          [(ngModel)]="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="w-full px-4 py-3 border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red font-[inherit]"
+        />
+      </div>
+
+      <div class="relative">
+        <label for="password-login" class="sr-only">Contraseña</label>
+        <input
+          id="password-login"
+          [type]="verContrasena ? 'text' : 'password'"
+          placeholder="Contraseña"
+          [(ngModel)]="contrasena"
+          name="contrasena"
+          required
+          autocomplete="current-password"
+          class="w-full px-4 py-3 pr-[44px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red font-[inherit]"
+        />
+        <button
+          type="button"
+          class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-0 text-gray-500 flex items-center hover:text-naan-red"
+          (click)="verContrasena = !verContrasena"
+          [attr.aria-label]="verContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          [attr.aria-pressed]="verContrasena"
+        >
+          @if (!verContrasena) {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      <div class="flex justify-center items-center text-[13px]">
+        <label class="flex items-center gap-[6px] cursor-pointer text-gray-600">
+          <input type="checkbox" [(ngModel)]="recordar" name="accent-naan-red recordar" class="w-[14px] h-[14px]"/>
+          Mantener la sesión iniciada
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        class="bg-naan-red text-white border-none py-[14px] rounded-lg text-[15px] font-bold cursor-pointer w-full transition-[background-color] duration-200 mt-1 font-[inherit] hover:not-disabled:bg-[#8b0000] disabled:bg-gray-300 disabled:cursor-not-allowed"
+        [disabled]="cargando"
+        [attr.aria-busy]="cargando"
+      >
+        {{ cargando ? 'Accediendo...' : 'Acceder' }}
+      </button>
+
+    </form>
+
+    <p class="text-center text-sm text-gray-500 m-0">
+      ¿No tienes cuenta?
+      <a routerLink="/registro" class="text-naan-red no-underline font-semibold hover:underline">Regístrate</a>
+    </p>
+
+  </div>
+</div>

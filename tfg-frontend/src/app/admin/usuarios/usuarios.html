@@ -1,0 +1,49 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Usuarios</h1>
+  </div>
+
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtroBusqueda" (input)="aplicarFiltros()" />
+    <select [(ngModel)]="filtroRol" (change)="aplicarFiltros()">
+      <option value="">Todos los roles</option>
+      <option value="admin">Admin</option>
+      <option value="cliente">Cliente</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Teléfono</th>
+        <th>Fecha nacimiento</th>
+        <th>Fecha registro</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.id_usuario }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>
+          <span class="badge" [class.activo]="usuario.rol === 'admin'" [class.inactivo]="usuario.rol === 'cliente'">
+            {{ usuario.rol }}
+          </span>
+        </td>
+        <td>{{ usuario.telefono }}</td>
+        <td>{{ usuario.fecha_nacimiento }}</td>
+        <td>{{ usuario.fecha_registro }}</td>
+        <td class="acciones">
+          <button class="btn-toggle" (click)="toggleAdmin(usuario)">
+            {{ usuario.rol === 'admin' ? 'Quitar admin' : 'Hacer admin' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

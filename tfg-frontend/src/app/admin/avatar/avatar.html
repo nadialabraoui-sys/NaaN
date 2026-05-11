@@ -1,0 +1,38 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Avatar 3D</h1>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Pecho</th>
+        <th>Cintura</th>
+        <th>Cadera</th>
+        <th>Estatura</th>
+        <th>Peso</th>
+        <th>Edad</th>
+        <th>Talla</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let avatar of avatares">
+        <td>{{ avatar.id_avatar }}</td>
+        <td>{{ getEmailUsuario(avatar.id_usuario) }}</td>
+        <td>{{ avatar.pecho }}</td>
+        <td>{{ avatar.cintura }}</td>
+        <td>{{ avatar.cadera }}</td>
+        <td>{{ avatar.estatura }}</td>
+        <td>{{ avatar.peso }}</td>
+        <td>{{ avatar.edad }}</td>
+        <td>{{ avatar.talla }}</td>
+        <td class="acciones">
+          <button class="btn-eliminar" (click)="eliminarAvatar(avatar.id_avatar)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

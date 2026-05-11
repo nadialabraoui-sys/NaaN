@@ -1,0 +1,40 @@
+<!-- escritorio -->
+<section
+  class="[scroll-snap-align:start] [scroll-snap-stop:always] bg-naan-grey h-screen box-border flex flex-col justify-center px-20 pl-[160px] py-8 overflow-hidden max-md:hidden"
+  aria-label="Novedades"
+>
+  <div class="flex flex-col items-center">
+    <h2 class="text-[50px] text-naan-red m-0 mb-8 text-center font-bold tracking-[-0.1em] skew-x-[-12deg]">NOVEDADES</h2>
+
+    @if (!cargandoNovedades() && novedades().length > 0) {
+      <div class="border-5 border-naan-red bg-transparent rounded-2xl p-6">
+        <div class="grid grid-cols-8 gap-5 max-w-5xl" role="list">
+          @for (p of novedades(); track p.id_producto; let i = $index) {
+            <app-tarjeta-producto
+              class="col-span-2"
+              [class.col-start-2]="i === 4"
+              [producto]="p"
+              [mostrarFavorito]="false"
+            ></app-tarjeta-producto>
+          }
+        </div>
+      </div>
+    }
+
+    @if (!cargandoNovedades() && novedades().length === 0) {
+      <p class="text-[#aaa] text-sm py-10 text-center">No hay productos disponibles.</p>
+    }
+  </div>
+</section>
+
+<!-- movil -->
+<section class="px-5 py-10 hidden max-md:block" aria-label="Novedades">
+  <h2 class="text-[28px] font-extrabold text-naan-red m-0 mb-8 text-center">Novedades</h2>
+  @if (!cargandoNovedades() && novedades().length > 0) {
+    <div class="grid grid-cols-2 gap-3" role="list">
+      @for (p of novedades(); track p.id_producto) {
+        <app-tarjeta-producto [producto]="p" [mostrarFavorito]="false"></app-tarjeta-producto>
+      }
+    </div>
+  }
+</section>

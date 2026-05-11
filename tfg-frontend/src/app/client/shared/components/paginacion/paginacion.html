@@ -1,0 +1,30 @@
+﻿<nav
+  class="flex items-center justify-center gap-3 py-4"
+  aria-label="Paginación"
+>
+  <button
+    class="px-3 flex items-center justify-center bg-transparent border-none text-[24px] text-gray-400 cursor-pointer transition-colors duration-150 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed"
+    (click)="cambiarPagina.emit(paginaActual() - 1)"
+    [disabled]="paginaActual() === 1"
+    aria-label="Página anterior"
+  >‹</button>
+
+  @for (p of paginas(); track p) {
+    <button
+      class="px-4 pb-1 flex items-center justify-center bg-transparent text-[18px] font-semibold cursor-pointer transition-all duration-150 border-b-2"
+      [class]="p === paginaActual()
+        ? 'text-black border-naan-red cursor-default'
+        : 'text-gray-400 border-transparent hover:text-black'"
+      (click)="cambiarPagina.emit(p)"
+      [attr.aria-label]="'Página ' + p"
+      [attr.aria-current]="p === paginaActual() ? 'page' : null"
+    >{{ p }}</button>
+  }
+
+  <button
+    class="px-3 flex items-center justify-center bg-transparent border-none text-[24px] text-gray-400 cursor-pointer transition-colors duration-150 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed"
+    (click)="cambiarPagina.emit(paginaActual() + 1)"
+    [disabled]="paginaActual() === totalPaginas()"
+    aria-label="Página siguiente"
+  >›</button>
+</nav>

@@ -1,0 +1,98 @@
+﻿<div class="w-full box-border flex flex-col items-center">
+
+  <h2 class="w-full max-w-[700px] text-[22px] font-bold text-gray-900 m-0 mb-7">Ayuda</h2>
+
+  <div class="grid grid-cols-[1fr_1px_1fr] max-md:grid-cols-1 bg-white border border-gray-200 rounded-xl overflow-hidden mb-9 max-w-[700px] w-full" role="complementary" aria-label="Información de contacto">
+
+    <div class="flex items-center gap-4 px-8 py-7 max-md:border-b max-md:border-gray-200">
+      <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-naan-red shrink-0" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+        </svg>
+      </div>
+      <div class="flex flex-col gap-[3px]">
+        <span class="text-xs text-gray-400 font-medium uppercase tracking-[0.04em]">Teléfono de atención</span>
+        <a href="tel:+34123456789" class="text-base font-bold text-gray-900 no-underline whitespace-nowrap hover:text-naan-red">+34 123 456 789</a>
+        <span class="text-xs text-gray-300">Lun – Vie, 9:00 – 18:00</span>
+      </div>
+    </div>
+
+    <div class="bg-gray-200 my-5 max-md:hidden" aria-hidden="true"></div>
+
+    <div class="flex items-center gap-4 px-8 py-7">
+      <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-naan-red shrink-0" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        </svg>
+      </div>
+      <div class="flex flex-col gap-[3px]">
+        <span class="text-xs text-gray-400 font-medium uppercase tracking-[0.04em]">Correo electrónico</span>
+        <a href="mailto:naan.help@gmail.com" class="text-base font-bold text-gray-900 no-underline whitespace-nowrap hover:text-naan-red">naan.help@gmail.com</a>
+        <span class="text-xs text-gray-300">Respuesta en menos de 24 h</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="w-full max-w-[700px]" aria-label="Preguntas frecuentes">
+    <h3 class="text-[17px] font-bold text-gray-900 m-0 mb-4">Preguntas frecuentes</h3>
+
+    <div class="border border-gray-200 rounded-xl overflow-hidden">
+      @for (faq of faqs; track faq; let i = $index) {
+        <div
+          class="border-b border-gray-100 last:border-b-0"
+          [class.bg-red-50]="abiertos().has(i)"
+        >
+          <button
+            class="w-full flex justify-between items-center gap-4 px-5 py-[18px] bg-white border-none cursor-pointer text-left text-sm font-semibold text-gray-900 transition-[background] duration-150 hover:bg-gray-50"
+            [class.bg-red-50]="abiertos().has(i)"
+            [class.text-naan-red]="abiertos().has(i)"
+            (click)="toggle(i)"
+            [attr.aria-expanded]="abiertos().has(i)"
+            [attr.aria-controls]="'faq-respuesta-' + i"
+          >
+            <span>{{ faq.pregunta }}</span>
+            <svg
+              class="shrink-0 text-gray-400 transition-transform duration-200"
+              [class.rotate-180]="abiertos().has(i)"
+              [class.text-naan-red]="abiertos().has(i)"
+              xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          @if (abiertos().has(i)) {
+            <div
+              [id]="'faq-respuesta-' + i"
+              class="px-5 pb-[18px] text-sm text-gray-500 leading-[1.7] bg-red-50"
+              role="region"
+            >
+              {{ faq.respuesta }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="w-full max-w-[700px] mt-9" aria-label="Información legal">
+    <h3 class="text-[17px] font-bold text-gray-900 m-0 mb-4">Información legal</h3>
+    <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+      <a routerLink="/terminos-condiciones" target="_blank"
+        class="flex items-center justify-between px-5 py-[18px] text-sm text-gray-600 no-underline border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50 hover:text-naan-red">
+        <span>Términos y Condiciones</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+      <a routerLink="/politica-privacidad" target="_blank"
+        class="flex items-center justify-between px-5 py-[18px] text-sm text-gray-600 no-underline transition-colors duration-150 hover:bg-gray-50 hover:text-naan-red">
+        <span>Política de Privacidad</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+    </div>
+  </section>
+
+</div>

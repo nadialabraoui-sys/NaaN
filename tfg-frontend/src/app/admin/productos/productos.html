@@ -1,0 +1,117 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Productos</h1>
+    <button class="btn-crear" (click)="abrirModalCrear()">Crear producto</button>
+  </div>
+
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtroBusqueda" />
+    <select [(ngModel)]="filtroCategoria">
+      <option value="">Todas las categorias</option>
+      <option *ngFor="let cat of categorias" [value]="cat.id_categoria">{{ cat.nombre }}</option>
+    </select>
+    <select [(ngModel)]="filtroEstado">
+      <option value="">Todos los estados</option>
+      <option value="1">Activo</option>
+      <option value="0">Inactivo</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Categoria</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let producto of productosFiltrados">
+        <td>{{ producto.id_producto }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.precio }}€</td>
+        <td>{{ producto.stock }}</td>
+        <td>{{ getNombreCategoria(producto.id_categoria) }}</td>
+        <td>
+          <section
+            class="badge"
+            [class.activo]="producto.activo == 1"
+            [class.inactivo]="producto.activo == 0"
+          >
+            {{ producto.activo == 1 ? 'Activo' : 'Inactivo' }}
+          </section>
+        </td>
+        <td class="acciones">
+          <button class="btn-toggle" (click)="toggleActivo(producto)">
+            {{ producto.activo == 1 ? 'Desactivar' : 'Activar' }}
+          </button>
+          <button class="btn-editar" (click)="abrirModal(producto)">Editar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ productoSeleccionado ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="formulario.nombre" />
+
+      <label>Descripción</label>
+      <textarea [(ngModel)]="formulario.descripcion"></textarea>
+
+      <label>Precio</label>
+      <input type="number" [(ngModel)]="formulario.precio" />
+
+      <label>Stock</label>
+      <input type="number" [(ngModel)]="formulario.stock" />
+
+      <label>Categoria</label>
+      <select [(ngModel)]="formulario.id_categoria">
+        <option *ngFor="let cat of categorias" [value]="cat.id_categoria">
+          {{ cat.nombre }}
+        </option>
+      </select>
+
+      <label>Color</label>
+      <select [(ngModel)]="formulario.color">
+        <option value="">Sin especificar</option>
+        @for (c of colores; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+
+      <label>Sexo</label>
+      <select [(ngModel)]="formulario.sexo">
+        <option value="">Sin especificar</option>
+        <option value="hombre">Hombre</option>
+        <option value="mujer">Mujer</option>
+        <option value="unisex">Unisex</option>
+      </select>
+
+      <label>Talla</label>
+      <select [(ngModel)]="formulario.talla">
+        <option value="">Sin especificar</option>
+        <option value="XS">XS</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+        <option value="XXL">XXL</option>
+      </select>
+
+      <label>Imagen</label>
+      <input type="text" [(ngModel)]="formulario.imagen" />
+
+      <div class="modal-acciones">
+        <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarProducto()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

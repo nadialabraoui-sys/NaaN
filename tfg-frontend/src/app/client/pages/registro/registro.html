@@ -1,0 +1,129 @@
+﻿<div class="min-h-screen flex items-center justify-center bg-white px-4 py-10">
+  <div class="w-full max-w-[600px] px-10 py-12 flex flex-col gap-[18px]">
+
+    <a class="text-naan-red flex justify-center font-bold text-7xl mb-10" routerLink="/landing">
+    <div aria-hidden="true"  >&#123; &nbsp;</div>
+              <span class="inline-block skew-x-[-12deg]">NaaN</span>
+              <div aria-hidden="true">&nbsp; &#125;</div>
+
+</a>
+    <h1 class="text-[1.3rem] font-bold text-center text-gray-900 m-0">Bienvenido/a</h1>
+
+    @if (error()) {
+      <div
+        class="bg-red-50 text-naan-red px-[14px] py-[10px] rounded-md text-[13px] text-center"
+        role="alert"
+        aria-live="assertive"
+      >{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="crearCuenta()" class="flex flex-col gap-[14px]" novalidate aria-label="Formulario de registro">
+
+      <p class="text-right text-xs text-gray-500 m-0">* Campos obligatorios</p>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label for="reg-nombre" class="sr-only">Nombre</label>
+          <input id="reg-nombre" type="text" placeholder="Nombre *" [(ngModel)]="nombre" name="nombre" required
+            class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+        </div>
+        <div>
+          <label for="reg-apellido" class="sr-only">Apellido</label>
+          <input id="reg-apellido" type="text" placeholder="Apellido *" [(ngModel)]="apellido" name="apellido" required
+            class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+        </div>
+        <div>
+          <label for="reg-segundo" class="sr-only">Segundo apellido</label>
+          <input id="reg-segundo" type="text" placeholder="Segundo apellido" [(ngModel)]="segundoApellido" name="segundoApellido"
+            class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+        </div>
+      </div>
+
+      <div>
+        <label for="reg-email" class="sr-only">Correo electrónico</label>
+        <input id="reg-email" type="email" placeholder="Correo electrónico *" [(ngModel)]="email" name="email" required autocomplete="email"
+          class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="relative">
+          <label for="reg-pass" class="sr-only">Contraseña</label>
+          <input id="reg-pass" [type]="verContrasena ? 'text' : 'password'" placeholder="Contraseña *"
+            [(ngModel)]="contrasena" name="contrasena" required autocomplete="new-password"
+            class="w-full px-[14px] py-[11px] pr-[44px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+          <button type="button" (click)="verContrasena = !verContrasena"
+            [attr.aria-label]="verContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            [attr.aria-pressed]="verContrasena"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-0 text-gray-500 flex items-center hover:text-naan-red">
+            @if (!verContrasena) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            }
+          </button>
+        </div>
+        <div class="relative">
+          <label for="reg-pass2" class="sr-only">Repetir contraseña</label>
+          <input id="reg-pass2" [type]="verRepetir ? 'text' : 'password'" placeholder="Repetir contraseña *"
+            [(ngModel)]="repetirContrasena" name="repetirContrasena" required autocomplete="new-password"
+            class="w-full px-[14px] py-[11px] pr-[44px] border-[1.5px] border-gray-300 rounded-lg text-sm outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+          <button type="button" (click)="verRepetir = !verRepetir"
+            [attr.aria-label]="verRepetir ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            [attr.aria-pressed]="verRepetir"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-0 text-gray-500 flex items-center hover:text-naan-red">
+            @if (!verRepetir) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            }
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="reg-fecha" class="text-xs text-gray-500 m-0">Fecha de nacimiento</label>
+        <input id="reg-fecha" type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento"
+          class="w-full px-[14px] py-[11px] border-[1.5px] border-gray-300 rounded-lg text-sm text-gray-500 outline-none box-border transition-[border-color] duration-200 focus:border-naan-red"/>
+      </div>
+
+      <label class="flex items-center gap-2 text-[13px] text-gray-600 cursor-pointer">
+        <input type="checkbox" [(ngModel)]="aceptaCondiciones" name="aceptaCondiciones" class="w-[15px] h-[15px] shrink-0 accent-naan-red"/>
+        He leído y acepto los
+        <a routerLink="/terminos-condiciones" target="_blank"
+          class="text-naan-red font-semibold underline [text-underline-offset:3px] hover:text-[#8b0000]"
+          (click)="$event.stopPropagation()">
+          Términos y Condiciones
+        </a> *
+      </label>
+
+      <label class="flex items-center gap-2 text-[13px] text-gray-500 cursor-pointer">
+        <input type="checkbox" [(ngModel)]="aceptaPrivacidad" name="aceptaPrivacidad" class="w-[15px] h-[15px] shrink-0 accent-naan-red"/>
+        He leído y acepto la
+        <a routerLink="/politica-privacidad" target="_blank"
+          class="text-naan-red font-semibold underline [text-underline-offset:3px] hover:text-[#8b0000]"
+          (click)="$event.stopPropagation()">
+          Política de Privacidad
+        </a> *
+      </label>
+
+      <label class="flex items-center gap-2 text-[13px] text-gray-600 cursor-pointer">
+        <input type="checkbox" [(ngModel)]="recibirNotificaciones" name="recibirNotificaciones" class="w-[15px] h-[15px] shrink-0 accent-naan-red"/>
+        Deseo recibir notificaciones por correo
+      </label>
+
+      <div class="flex justify-between items-center mt-2">
+        <a routerLink="/login" class="text-naan-red no-underline text-sm font-semibold hover:underline">Iniciar sesión</a>
+        <button
+          type="submit"
+          class="bg-naan-red text-white border-none px-7 py-3 rounded-lg text-[15px] font-bold cursor-pointer transition-[background-color] duration-200 hover:bg-[#8b0000] disabled:bg-gray-300 disabled:cursor-not-allowed"
+          [disabled]="cargando()"
+          [attr.aria-busy]="cargando()"
+        >
+          {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="productos">
+  <div class="productos-header">
+    <h1>Auditoría</h1>
+  </div>
+
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por tabla..." [(ngModel)]="filtroBusqueda" (input)="aplicarFiltros()" />
+    <input type="date" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()" />
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tabla</th>
+        <th>ID Registro</th>
+        <th>Datos anteriores</th>
+        <th>Datos nuevos</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let auditoria of auditorias">
+        <td>{{ auditoria.id_auditoria }}</td>
+        <td>{{ auditoria.tabla_afectada }}</td>
+        <td>{{ auditoria.id_registro }}</td>
+        <td>{{ auditoria.datos_anteriores }}</td>
+        <td>{{ auditoria.datos_nuevos }}</td>
+        <td>{{ auditoria.fecha }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
