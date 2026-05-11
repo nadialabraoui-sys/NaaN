@@ -812,10 +812,10 @@ INSERT INTO `detalle_pedido` (`id_detalle_pedido`, `id_pedido`, `id_producto`, `
 --
 DELIMITER $$
 CREATE TRIGGER `trg_pedido_total_delete` AFTER DELETE ON `detalle_pedido` FOR EACH ROW BEGIN
-    UPDATE Pedido
+    UPDATE `pedido`
     SET total = (
         SELECT COALESCE(SUM(cantidad * precio_en_el_momento), 0)
-        FROM Detalle_Pedido
+        FROM `detalle_pedido`
         WHERE id_pedido = OLD.id_pedido
     )
     WHERE id_pedido = OLD.id_pedido;
@@ -824,10 +824,10 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `trg_pedido_total_insert` AFTER INSERT ON `detalle_pedido` FOR EACH ROW BEGIN
-    UPDATE Pedido
+    UPDATE `pedido`
     SET total = (
         SELECT COALESCE(SUM(cantidad * precio_en_el_momento), 0)
-        FROM Detalle_Pedido
+        FROM `detalle_pedido`
         WHERE id_pedido = NEW.id_pedido
     )
     WHERE id_pedido = NEW.id_pedido;
@@ -836,10 +836,10 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `trg_pedido_total_update` AFTER UPDATE ON `detalle_pedido` FOR EACH ROW BEGIN
-    UPDATE Pedido
+    UPDATE `pedido`
     SET total = (
         SELECT COALESCE(SUM(cantidad * precio_en_el_momento), 0)
-        FROM Detalle_Pedido
+        FROM `detalle_pedido`
         WHERE id_pedido = NEW.id_pedido
     )
     WHERE id_pedido = NEW.id_pedido;
