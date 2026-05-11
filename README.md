@@ -1,14 +1,60 @@
-NaaN
+# NaaN
 
-¿COMO DESPLEGARLO?
+## ¿Cómo desplegarlo?
 
-El despliegue de NaaN se realiza en local mediante Docker. Con Docker Desktop en ejecución, basta con ejecutar el siguiente comando en la raíz del proyecto:
+El despliegue de NaaN se realiza en **local mediante Docker**.
 
-"docker compose up --build"
+### Prerrequisitos
 
-Esto construye las imágenes y levanta tres contenedores: uno para la base de datos MySQL (naan-bd), otro para el backend Laravel (naan-backend) y otro para el frontend Angular (naan-frontend).
-Además, se crean dos volúmenes persistentes: naan_bd_data, que almacena los datos de la base de datos, y naan_storage, que guarda los archívos subidos por los usuarios.
+Antes de empezar, asegúrate de tener:
 
-Una vez iniciados, la aplicaión es accesible en http://localhost:4200
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y **en ejecución**
+- Las claves de **Groq** y **Stripe** (no incluidas en este repositorio)
+- Un archivo **`.env`** con las credenciales necesarias (no incluido en este repositorio)
 
-(También recordar que no esta en este github las claves de Groq ni de Stripe, tampoco cuenta con el .env coon credenciales ni con los node_modules necesarios para ejecutar la aplicación)
+---
+
+### Pasos para el despliegue
+
+**1. Instalar dependencias del frontend**
+
+```bash
+cd tfg-frontend
+npm install
+```
+
+**2. Instalar dependencias del backend**
+
+```bash
+cd tfg-backend
+npm install
+```
+
+**3. Construir y levantar los contenedores**
+
+Desde la **raíz del proyecto**, con Docker Desktop en ejecución:
+
+```bash
+docker compose up --build
+```
+
+Esto levantará tres contenedores:
+
+| Contenedor | Descripción |
+|---|---|
+| `naan-bd` | Base de datos MySQL |
+| `naan-backend` | Backend Laravel |
+| `naan-frontend` | Frontend Angular |
+
+También se crean dos volúmenes persistentes:
+- **`naan_bd_data`** — almacena los datos de la base de datos
+- **`naan_storage`** — guarda los archivos subidos por los usuarios
+
+**4. Acceder a la aplicación**
+
+Una vez iniciados los contenedores, la aplicación estará disponible en:
+http://localhost:4200
+
+---
+
+>  **Nota:** Este repositorio **no incluye** las claves de Groq ni de Stripe, el archivo `.env` con credenciales, ni los `node_modules`. Es necesario completar los pasos 1 y 2 antes de proceder con el despliegue.
